@@ -1,0 +1,3 @@
+[submodule "twitterAPI"]
+	path = twitterAPI
+	url = https://github.com/sixohsix/twitter
