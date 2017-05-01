@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from twitterAPI.twitter import *
 import json
 import discord
