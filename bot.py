@@ -22,7 +22,7 @@ def twitter_thread():
         if client.is_closed:
             return
         if 'event' in msg and msg['event'] == 'favorite' and msg['target']['id'] in config['followedAccounts']:
-            images = msg['target_object']['entities']['media']
+            images = msg['target_object']['extended_entities']['media']
             for img in images:
                 asyncio.ensure_future(
                     client.send_message(client.get_channel(config['discordChannelID']), img['media_url']),
