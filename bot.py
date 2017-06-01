@@ -18,11 +18,18 @@ def twitter_thread():
         token_secret=config['twitterTokens']['token_secret']
     )
     twitter_userstream = TwitterStream(auth=auth, domain='userstream.twitter.com')
+
+    t = Twitter(auth=auth)
+
+    members_id_list = []
+    for member in t.lists.members(owner_screen_name=t.account.settings()['screen_name'], slug=config['listName'])['users']:
+        members_id_list.append(member['id'])
+
     while not client.is_closed:
         for msg in twitter_userstream.user():
             if client.is_closed:
                 return
-            if 'event' in msg and msg['event'] == 'favorite' and msg['target']['id'] in config['followedAccounts']:
+            if 'event' in msg and msg['event'] == 'favorite' and msg['target']['id'] in members_id_list:
                 images = msg['target_object']['entities']['media']
                 for img in images:
                     asyncio.ensure_future(
