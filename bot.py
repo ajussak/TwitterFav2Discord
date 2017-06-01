@@ -18,16 +18,18 @@ def twitter_thread():
         token_secret=config['twitterTokens']['token_secret']
     )
     twitter_userstream = TwitterStream(auth=auth, domain='userstream.twitter.com')
-    for msg in twitter_userstream.user():
-        if client.is_closed:
-            return
-        if 'event' in msg and msg['event'] == 'favorite' and msg['target']['id'] in config['followedAccounts']:
-            images = msg['target_object']['entities']['media']
-            for img in images:
-                asyncio.ensure_future(
-                    client.send_message(client.get_channel(config['discordChannelID']), img['media_url']),
-                    loop=client.loop
-                )
+    while not client.is_closed:
+        for msg in twitter_userstream.user():
+            if client.is_closed:
+                return
+            if 'event' in msg and msg['event'] == 'favorite' and msg['target']['id'] in config['followedAccounts']:
+                images = msg['target_object']['entities']['media']
+                for img in images:
+                    asyncio.ensure_future(
+                        client.send_message(client.get_channel(config['discordChannelID']), img['media_url']),
+                        loop=client.loop
+                    )
+
 
 thread = threading.Thread(target=twitter_thread)
 
@@ -36,6 +38,7 @@ thread = threading.Thread(target=twitter_thread)
 async def on_ready():
     thread.start()
     print('Bot ready')
+
 
 print('TwitterFav2Discord\n')
 client.run(config['discordToken'])
