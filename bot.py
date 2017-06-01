@@ -8,10 +8,10 @@ import asyncio
 import os
 from shutil import copyfile
 
-config = json.load(open("config.sample.json"))
+config = json.load(open("config.json"))
 client = discord.Client()
 
-if os.path.exists('config.config'):
+if not os.path.exists('config.json'):
     copyfile('config.sample.json', 'config.json')
 
 
