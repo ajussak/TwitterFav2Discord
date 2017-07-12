@@ -35,13 +35,18 @@ def twitter_thread():
         for msg in twitter_userstream.user():
             if client.is_closed:
                 return
-            if 'event' in msg and msg['event'] == 'favorite' and msg['target']['id'] in members_id_list:
-                images = msg['target_object']['extended_entities']['media']
-                for img in images:
-                    asyncio.ensure_future(
-                        client.send_message(client.get_channel(config['discordChannelID']), img['media_url']),
-                        loop=client.loop
-                    )
+            if 'event' in msg:
+                if msg['event'] == 'favorite' and msg['target']['id'] in members_id_list:
+                    images = msg['target_object']['extended_entities']['media']
+                    for img in images:
+                        asyncio.ensure_future(
+                            client.send_message(client.get_channel(config['discordChannelID']), img['media_url']),
+                            loop=client.loop
+                        )
+                if msg['event'] == 'list_member_added' and msg['target_object']['slug'] == config['twitterListName']:
+                    members_id_list.append(msg['target']['id'])
+                if msg['event'] == 'list_member_removed' and msg['target_object']['slug'] == config['twitterListName']:
+                    members_id_list.remove(msg['target']['id'])
 
 
 thread = threading.Thread(target=twitter_thread)
